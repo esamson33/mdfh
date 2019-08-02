@@ -13,11 +13,14 @@
 
 class message {
 public:
-    enum { header_length = 6 };
-    enum { max_body_length = 1024 };
+    enum { seq_no_len = 4 };
+    enum { msg_count_len = 2 };
+    enum { header_len = seq_no_len + msg_count_len };
+    enum { max_body_len = 1024 };
+
 
     message()
-    : body_length_(0), body_count_(0)
+    : seq_no_(0), msg_count_(0)
     {
     }
 
@@ -31,61 +34,60 @@ public:
         return data_;
     }
 
-    const size_t length() const
-    {
-        return header_length + body_length_;
-    }
-
     const char* body() const
     {
-        return data_ + header_length;
+        return data_ + header_len;
     }
 
     char* body()
     {
-        return data_ + header_length;
+        return data_ + header_len;
     }
 
-    size_t body_length() const
+    size_t seq_no() const
     {
-        return body_length_;
+        return seq_no_;
     }
 
-    void body_length(size_t new_length)
+    void seq_no(size_t new_seq_no)
     {
-        body_length_ = new_length;
-        if (body_length_ > max_body_length)
-            body_length_ = max_body_length;
+        seq_no_ = new_seq_no;
     }
 
-    bool decode_header()
+    size_t msg_count() const
+    {
+        return msg_count_;
+    }
+
+    void msg_count(size_t new_msg_count)
+    {
+        msg_count_ = new_msg_count;
+    }
+
+    void decode_header()
     {
         using namespace std; // For strncat and atoi.
         char seq_no[seq_no_len+1] = "";
-        char seq_no[msg_count+1] = "";
         strncat(seq_no, data_, seq_no_len);
-        strncat(msg_count, data_[seq_no_len], msg_count);
-        body_length_ = atoi(header);
-        if (body_length_ > max_body_length)
-        {
-            body_length_ = 0;
-            return false;
-        }
-        return true;
+        char msg_count[msg_count_len+1] = "";
+        strncat(msg_count, data_+seq_no_len, msg_count_len);
+        seq_no_ = atoi(seq_no);
+        msg_count_ = atoi(msg_count);
     }
 
     void encode_header()
     {
         using namespace std; // For sprintf and memcpy.
-        char header[header_length + 1] = "";
-        sprintf(header, "%4d%2d", static_cast<int>(body_length_), static_cast<int>(body_count_));
-        memcpy(data_, header, header_length);
+        char header[header_len + 1] = "";
+        sprintf(header, "%4d%2d", static_cast<int>(seq_no_),
+                static_cast<int>(msg_count_));
+        memcpy(data_, header, header_len);
     }
 
 private:
-    char data_[header_length + max_body_length];
-    size_t body_length_;
-    size_t body_count_;
+    char data_[header_len + max_body_len];
+    size_t seq_no_;
+    size_t msg_count_;
 };
 
 

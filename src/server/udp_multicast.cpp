@@ -7,6 +7,7 @@
 #include <boost/asio.hpp>
 #include "udp_multicast.hpp"
 #include "system_message.hpp"
+#include "message.h"
 
 using namespace boost::asio;
 
@@ -59,10 +60,14 @@ namespace mdfh {
                                 placeholders::error));
             */
 
-            second_message m(secs);
+            message m;
+            m.seq_no(message_count_+1);
+            m.msg_count(1);
+            m.encode_header();
+            memcpy(m.body(), "", len);
             message_.assign(m.data(), m.size());
             socket_.async_send_to(
-                    buffer(message_), endpoint_,
+                    buffer(m.data(), len), endpoint_,
                     boost::bind(&udp_multicast_sender::handle_send_to, this,
                                 placeholders::error));
         }
