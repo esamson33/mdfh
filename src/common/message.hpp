@@ -68,14 +68,6 @@ public:
 
     void decode_header()
     {
-        /*
-        seq_no_ = ((data_[0] >> 24) & 0xFF |
-                (data_[1] >> 16) & 0xFF |
-                (data_[2] >> 8) & 0xFF |
-                (data_[3] >> 0) & 0xFF);
-        msg_count_ = ((data_[4] >> 8) & 0xFF |
-                      (data_[5] >> 0) & 0xFF);
-        */
         uint32_t seq_no;
         std::copy(&data_[0], &data_[4], reinterpret_cast<char*>(&seq_no));
         seq_no_ = ntohl(seq_no);
