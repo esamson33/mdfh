@@ -11,6 +11,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cstdint>
+#include <algorithm>
 
 class message {
 public:
@@ -67,22 +68,30 @@ public:
 
     void decode_header()
     {
-        seq_no_ = ((data_[0] >> 24) & 0xFF |
-                (data_[1] >> 16) & 0xFF |
-                (data_[2] >> 8) & 0xFF |
-                (data_[3] >> 0) & 0xFF);
-        msg_count_ = ((data_[4] >> 8) & 0xFF |
-                      (data_[5] >> 0) & 0xFF);
+        uint32_t seq_no;
+        std::copy(&data_[0], &data_[4], reinterpret_cast<char*>(&seq_no));
+        seq_no_ = ntohl(seq_no);
+
+        uint16_t msg_count;
+        std::copy(&data_[4], &data_[6], reinterpret_cast<char*>(&msg_count));
+        msg_count_ = ntohs(msg_count);
     }
 
     void encode_header()
     {
-        data_[0] = (seq_no_ >> 24) & 0xFF;
-        data_[1] = (seq_no_ >> 16) & 0xFF;
-        data_[2] = (seq_no_ >> 8) & 0xFF;
-        data_[3] = (seq_no_ >> 0) & 0xFF;
-        data_[4] = (msg_count_ >> 8) & 0xFF;
-        data_[5] = (msg_count_ >> 0) & 0xFF;
+        uint32_t seq_no = htonl(seq_no_);
+        std::copy(
+                reinterpret_cast<const char*>(&seq_no),
+                reinterpret_cast<const char*>(&seq_no) + sizeof(uint32_t),
+                &data_[0]
+        );
+
+        uint16_t msg_count = htons(msg_count_);
+        std::copy(
+                reinterpret_cast<const char*>(&msg_count),
+                reinterpret_cast<const char*>(&msg_count) + sizeof(uint16_t),
+                &data_[4]
+        );
     }
 
 private:
