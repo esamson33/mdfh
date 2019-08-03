@@ -2,8 +2,8 @@
 // Created by esamson on 8/2/19.
 //
 
-#ifndef MDFH_MESSAGE_H
-#define MDFH_MESSAGE_H
+#ifndef MDFH_MESSAGE_HPP
+#define MDFH_MESSAGE_HPP
 
 
 #include <cstddef>
@@ -92,4 +92,4 @@ private:
 };
 
 
-#endif //MDFH_MESSAGE_H
+#endif //MDFH_MESSAGE_HPP

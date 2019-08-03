@@ -1,14 +1,13 @@
 #include <string>
 #include "udp_receiver.hpp"
-#include "../server/message.h"
 
 namespace mdfh
 {
     udp_multicast_receiver::udp_multicast_receiver(boost::asio::io_context &io_context,
-                                                   const boost::asio::ip::address &listen_address,
-                                                   const boost::asio::ip::address &multicast_address)
-                                                   : socket_(io_context),
-                                                   status_(system_message::ev_code::init)
+            const boost::asio::ip::address &listen_address,
+            const boost::asio::ip::address &multicast_address)
+            : socket_(io_context),
+            status_(system_message::ev_code::init)
             {
         // Create the socket so that multiple may be bound to the same address.
         boost::asio::ip::udp::endpoint listen_endpoint(listen_address, multicast_port);

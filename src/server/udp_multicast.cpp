@@ -3,11 +3,10 @@
 //
 
 #include <iostream>
-#include <cstdio>
 #include <boost/asio.hpp>
 #include "udp_multicast.hpp"
-#include "system_message.hpp"
-#include "message.h"
+#include "common/system_message.hpp"
+#include "common/message.hpp"
 
 using namespace boost::asio;
 

@@ -5,8 +5,8 @@
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
-#include "../server/message.h"
-#include "../server/system_message.hpp"
+#include "common/message.hpp"
+#include "common/system_message.hpp"
 
 
 namespace mdfh

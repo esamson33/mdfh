@@ -7,7 +7,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 
-#include "system_message.hpp"
+#include "common/system_message.hpp"
 
 using namespace boost::asio;
 using namespace std::chrono;
