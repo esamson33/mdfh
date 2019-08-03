@@ -59,6 +59,21 @@ namespace mdfh
                     status_ = system_message::ev_code::open_messages;
                     char ev_type = in_.data()[current_index+11];
                     std::cout << "ev_type " << ev_type << "\n";
+                    switch (ev_type)
+                    {
+                        case 'O':
+                            status_ = system_message::ev_code::open_messages;
+                            break;
+                        case 'S':
+                            status_ = system_message::ev_code::start_trading;
+                            break;
+                        case 'E':
+                            status_ = system_message::ev_code::end_trading;
+                            break;
+                        case 'C':
+                            status_ = system_message::ev_code::close_messages;
+                            break;
+                    }
                 }
 
                 current_index += len+1;
