@@ -8,6 +8,8 @@ namespace mdfh
     class system_message
     {
     public:
+        enum { message_len = 12 };
+        typedef std::array<unsigned char, message_len> buffer_type;
         enum ev_code {
             init = 'I',
             open_messages = 'O',
@@ -18,11 +20,12 @@ namespace mdfh
         system_message(uint32_t ts, ev_code ev)
           : ts_(ts), ev_(ev) {}
 
-        std::string message();
+        buffer_type message();
 
     private:
-        uint32_t ts_;
+        uint64_t ts_;
         ev_code ev_;
+        std::string message_;
     };
 
 }

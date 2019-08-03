@@ -5,6 +5,8 @@
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+#include "../server/message.h"
+#include "../server/system_message.hpp"
 
 
 namespace mdfh
@@ -12,8 +14,6 @@ namespace mdfh
     class udp_multicast_receiver
     {
     public:
-
-
         udp_multicast_receiver(boost::asio::io_context&,
                 const boost::asio::ip::address& listen_address,
                  const boost::asio::ip::address& multicast_address);
@@ -23,8 +23,10 @@ namespace mdfh
     private:
         boost::asio::ip::udp::socket socket_;
         boost::asio::ip::udp::endpoint sender_endpoint_;
-        enum { max_length = 1024, multicast_port = 54321 };
-        char data_[max_length];
+        enum { max_length = 1024 };
+        enum { multicast_port = 54321 };
+        message in_;
+        system_message::ev_code status_;
     };
 
 } // ns mdfh

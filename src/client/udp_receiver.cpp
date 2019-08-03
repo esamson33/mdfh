@@ -1,11 +1,14 @@
+#include <string>
 #include "udp_receiver.hpp"
+#include "../server/message.h"
 
 namespace mdfh
 {
     udp_multicast_receiver::udp_multicast_receiver(boost::asio::io_context &io_context,
                                                    const boost::asio::ip::address &listen_address,
                                                    const boost::asio::ip::address &multicast_address)
-                                                   : socket_(io_context)
+                                                   : socket_(io_context),
+                                                   status_(system_message::ev_code::init)
             {
         // Create the socket so that multiple may be bound to the same address.
         boost::asio::ip::udp::endpoint listen_endpoint(listen_address, multicast_port);
@@ -18,29 +21,52 @@ namespace mdfh
                 boost::asio::ip::multicast::join_group(multicast_address));
 
         socket_.async_receive_from(
-                boost::asio::buffer(data_, max_length), sender_endpoint_,
+                boost::asio::buffer(in_.data(), message::max_message_len), sender_endpoint_,
                 boost::bind(&udp_multicast_receiver::handle_receive_from, this,
                             boost::asio::placeholders::error,
                             boost::asio::placeholders::bytes_transferred));
     }
 
     void udp_multicast_receiver::handle_receive_from(const boost::system::error_code &error,
-                                                     size_t bytes_recvd)
+                                                     size_t /*bytes_recvd*/)
     {
         if (!error) {
-            // parse data here
-            //uint32_t seq_num = *(reinterpret_cast<uint32_t*>(data_));
-            //uint16_t msg_count = *(reinterpret_cast<uint32_t*>(data_+4));
-            char s[] = { data_[0], 0 };
-            uint32_t seq_num = std::atoi(s);
-            uint16_t msg_count = 0;//std::atoi(data_[1);
+            in_.decode_header();
+            std::cout << "seq_num " << in_.seq_no() << ", msg_count " << in_.msg_count() << "\n";
 
-            std::cout << "seq_num " << seq_num << ", msg_count " << msg_count << "\n";
-            std::cout.write(data_, bytes_recvd);
-            std::cout << std::endl;
+            int current_index = message::header_len;
+            for (int n = 0; n < in_.msg_count(); n++)
+            {
+                uint16_t len;
+                len = ((in_.data()[current_index] >> 8) & 0xFF |
+                        (in_.data()[current_index+1] >> 0) & 0xFF);
+
+                // +2
+                char ts[9] = "";
+                for (int n=0; n < 8; n++)
+                {
+                    ts[n] = in_.data()[current_index+2+n];
+                }
+                std::cout << "ts " << ts << "\n";
+
+                //+8
+                char m_type = in_.data()[current_index+10];
+                std::cout << "m_type " << m_type << "\n";
+
+                //+1, +1
+                if (m_type == 'S')
+                {
+                    status_ = system_message::ev_code::open_messages;
+                    char ev_type = in_.data()[current_index+11];
+                    std::cout << "ev_type " << ev_type << "\n";
+                }
+
+                current_index += len+1;
+            }
+
 
             socket_.async_receive_from(
-                    boost::asio::buffer(data_, max_length), sender_endpoint_,
+                    boost::asio::buffer(in_.data(), message::max_message_len), sender_endpoint_,
                     boost::bind(&udp_multicast_receiver::handle_receive_from, this,
                                 boost::asio::placeholders::error,
                                 boost::asio::placeholders::bytes_transferred));

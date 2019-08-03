@@ -17,7 +17,7 @@ namespace mdfh
     class udp_multicast_sender
     {
     public:
-        const short multicast_port = 54321;
+        const int multicast_port = 54321;
 #ifdef MDFH_DEV
         static const int max_message_count = 10;
 #else
@@ -28,10 +28,6 @@ namespace mdfh
     private:
         void set_midnight_timepoint();
         
-        void send_second_message(const boost::system::error_code&);
-
-        void handle_send_to(const boost::system::error_code&);
-
         void send_start_message();
 
         void handle_send_start(const boost::system::error_code&);

@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <cstdint>
 
 class message {
 public:
@@ -17,10 +18,10 @@ public:
     enum { msg_count_len = 2 };
     enum { header_len = seq_no_len + msg_count_len };
     enum { max_body_len = 1024 };
-
+    enum { max_message_len = header_len + max_body_len };
 
     message()
-    : seq_no_(0), msg_count_(0)
+    : data_(""), seq_no_(0), msg_count_(0)
     {
     }
 
@@ -66,28 +67,28 @@ public:
 
     void decode_header()
     {
-        using namespace std; // For strncat and atoi.
-        char seq_no[seq_no_len+1] = "";
-        strncat(seq_no, data_, seq_no_len);
-        char msg_count[msg_count_len+1] = "";
-        strncat(msg_count, data_+seq_no_len, msg_count_len);
-        seq_no_ = atoi(seq_no);
-        msg_count_ = atoi(msg_count);
+        seq_no_ = ((data_[0] >> 24) & 0xFF |
+                (data_[1] >> 16) & 0xFF |
+                (data_[2] >> 8) & 0xFF |
+                (data_[3] >> 0) & 0xFF);
+        msg_count_ = ((data_[4] >> 8) & 0xFF |
+                      (data_[5] >> 0) & 0xFF);
     }
 
     void encode_header()
     {
-        using namespace std; // For sprintf and memcpy.
-        char header[header_len + 1] = "";
-        sprintf(header, "%4d%2d", static_cast<int>(seq_no_),
-                static_cast<int>(msg_count_));
-        memcpy(data_, header, header_len);
+        data_[0] = (seq_no_ >> 24) & 0xFF;
+        data_[1] = (seq_no_ >> 16) & 0xFF;
+        data_[2] = (seq_no_ >> 8) & 0xFF;
+        data_[3] = (seq_no_ >> 0) & 0xFF;
+        data_[4] = (msg_count_ >> 8) & 0xFF;
+        data_[5] = (msg_count_ >> 0) & 0xFF;
     }
 
 private:
     char data_[header_len + max_body_len];
-    size_t seq_no_;
-    size_t msg_count_;
+    uint32_t seq_no_;
+    uint16_t msg_count_;
 };
 
 
