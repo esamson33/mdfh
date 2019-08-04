@@ -15,8 +15,10 @@ namespace mdfh
         }
         system_message::buffer_type buf;
         auto len = static_cast<uint16_t>(message_.size());
-        buf[0] = (len >> 8) & 0xFF;
-        buf[1] = (len >> 0) & 0xFF;
+        auto l = htons(len);
+        std::copy(reinterpret_cast<const char*>(&l),
+                  reinterpret_cast<const char*>(&l) + sizeof(uint16_t),
+                  buf.begin());
         std::copy(message_.begin(), message_.end(), buf.begin()+2);
         return buf;
     }

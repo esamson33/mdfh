@@ -2,6 +2,7 @@
 #define SYSTEM_MESSAGE_HPP
 
 #include <string>
+
 namespace mdfh
 {
 

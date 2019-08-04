@@ -37,8 +37,8 @@ namespace mdfh
             for (int n = 0; n < in_.msg_count(); n++)
             {
                 uint16_t len;
-                len = ((in_.data()[current_index] >> 8) & 0xFF |
-                        (in_.data()[current_index+1] >> 0) & 0xFF);
+                std::copy(&(in_.data()[current_index]), &(in_.data()[current_index+1]), reinterpret_cast<char*>(&len));
+                len = ntohs(len);
 
                 // +2
                 char ts[9] = "";

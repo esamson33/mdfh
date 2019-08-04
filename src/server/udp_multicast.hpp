@@ -17,6 +17,8 @@ namespace mdfh
     class udp_multicast_sender
     {
     public:
+        typedef executor_work_guard<io_context::executor_type> work_guard;
+
         const int multicast_port = 54321;
 #ifdef MDFH_DEV
         static const int max_message_count = 10;
@@ -28,9 +30,21 @@ namespace mdfh
     private:
         void set_midnight_timepoint();
         
-        void send_start_message();
+        void send_open_message();
 
-        void handle_send_start(const boost::system::error_code&);
+        void handle_send_open(const boost::system::error_code&);
+
+        void send_start_trade_message();
+
+        void handle_send_start_trade(const boost::system::error_code&);
+
+        void send_end_trade_message();
+
+        void handle_send_end_trade(const boost::system::error_code&);
+
+        void send_close_message();
+
+        void handle_send_close(const boost::system::error_code&);
 
     private:
         ip::udp::endpoint endpoint_;
@@ -41,6 +55,7 @@ namespace mdfh
         system_clock::time_point tp_mn_;
         system_clock::time_point tp_last_;
         system_message::ev_code status_;
+        executor_work_guard<io_context::executor_type> work_;
     };
 }
 
