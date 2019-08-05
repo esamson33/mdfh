@@ -46,6 +46,10 @@ namespace mdfh
 
         void handle_send_close(const boost::system::error_code&);
 
+        void start_order_sending();
+
+        void handle_send_order(const boost::system::error_code&, int);
+
     private:
         ip::udp::endpoint endpoint_;
         ip::udp::socket socket_;

@@ -1,5 +1,6 @@
 #include <string>
 #include "udp_receiver.hpp"
+#include "common/market_data/order.hpp"
 
 namespace mdfh
 {
@@ -37,7 +38,9 @@ namespace mdfh
             for (int n = 0; n < in_.msg_count(); n++)
             {
                 uint16_t len;
-                std::copy(&(in_.data()[current_index]), &(in_.data()[current_index+1]), reinterpret_cast<char*>(&len));
+                std::copy(&(in_.data()[current_index]),
+                        &(in_.data()[current_index+2]),
+                        reinterpret_cast<char*>(&len));
                 len = ntohs(len);
 
                 // +2
@@ -73,6 +76,17 @@ namespace mdfh
                             status_ = system_message::ev_code::close_messages;
                             break;
                     }
+                }
+                else if (m_type == 'A')
+                {
+                    std::string in(&in_.data()[current_index+2], len);
+                    mdfh::common::market_data::order o =
+                            mdfh::common::market_data::from_string(in);
+                    std::cout << "order\n"
+                                << "\tside: " << ((o.ind == 'B') ? "BUY" : "SELL") << "\n"
+                                << "\tstock: " << o.stock << "\n"
+                                << "\tshares: " << o.shares << "\n"
+                                << "\tprice: " << o.price << "\n";
                 }
 
                 current_index += len+1;
