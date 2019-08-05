@@ -2,8 +2,7 @@ project(mdfh_server)
 
 set(SOURCES
         main.cpp 
-        udp_multicast.hpp udp_multicast.cpp
-        ../common/system_message.hpp ../common/system_message.cpp ../common/message.hpp)
+        udp_multicast.hpp udp_multicast.cpp )
 
 add_executable(server ${SOURCES})
 IF(APPLE)

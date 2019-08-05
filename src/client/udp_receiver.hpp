@@ -7,10 +7,11 @@
 #include <boost/bind.hpp>
 #include "common/message.hpp"
 #include "common/system_message.hpp"
+#include "order_library.hpp"
 
+namespace mdfh {
+namespace client {
 
-namespace mdfh
-{
     class udp_multicast_receiver
     {
     public:
@@ -27,8 +28,9 @@ namespace mdfh
         enum { multicast_port = 54321 };
         message in_;
         system_message::ev_code status_;
+        order_library library_;
     };
-
+}
 } // ns mdfh
 
 #endif //MDFH_UDP_RECEIVER_HPP

@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
         }
 
         boost::asio::io_context io_context;
-        mdfh::udp_multicast_receiver r(io_context,
+        mdfh::client::udp_multicast_receiver r(io_context,
                    boost::asio::ip::make_address(argv[1]),
                    boost::asio::ip::make_address(argv[2]));
         io_context.run();

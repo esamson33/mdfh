@@ -171,31 +171,41 @@ namespace mdfh {
 
     void udp_multicast_sender::start_order_sending()
     {
-        std::string csv= "12345678,A,123456789,B,001000,   IBM,0002000000,Y";
-        auto order = mdfh::common::market_data::from_csv(csv);
+        std::string csv_from_input_file[] = {
+                "00000000,A,123456789,B,001000,   IBM,0002000000,Y",
+                "00000000,A,123456790,S,001001,   IBM,0006000000,Y",
+        };
 
-        message msg_packet;
-        msg_packet.seq_no(message_count_ + 1);
-        msg_packet.msg_count(1);
-        msg_packet.encode_header();
+        for (const auto& csv: csv_from_input_file)
+        {
+            auto order = mdfh::common::market_data::from_csv(csv);
 
-        std::string o = order.str();
-        std::cout << "order " << o.c_str() << "\n";
-        auto len = static_cast<uint16_t>(o.size());
-        constexpr int buf_len = mdfh::common::market_data::order::total_data_len + 2;
-        char buf[buf_len];
-        len = htons(len);
+            system_clock::time_point tp_now = system_clock::now();
+            auto diff = duration_cast<milliseconds>(tp_now - tp_mn_);
+            order->ts = std::to_string(diff.count());
+            message msg_packet;
+            msg_packet.seq_no(message_count_ + 1);
+            msg_packet.msg_count(1);
+            msg_packet.encode_header();
 
-        std::copy(reinterpret_cast<const char*>(&len),
-                  reinterpret_cast<const char*>(&len) + sizeof(uint16_t),
-                  &buf[0]);
-        std::copy(o.begin(), o.end(), &buf[0]+2);
-        std::copy(&buf[0], &buf[0]+ (2+o.size()), msg_packet.body());
-        message_.assign(msg_packet.data(), msg_packet.header_len + (2+o.size()));
-        socket_.async_send_to(
-                buffer(message_), endpoint_,
-                boost::bind(&udp_multicast_sender::handle_send_order, this,
-                            placeholders::error, 1));
+            std::string o = order->str();
+            std::cout << "order " << o.c_str() << "\n";
+            auto len = static_cast<uint16_t>(o.size());
+            constexpr int buf_len = mdfh::common::market_data::order::total_data_len + 2;
+            char buf[buf_len];
+            len = htons(len);
+
+            std::copy(reinterpret_cast<const char*>(&len),
+                      reinterpret_cast<const char*>(&len) + sizeof(uint16_t),
+                      &buf[0]);
+            std::copy(o.begin(), o.end(), &buf[0]+2);
+            std::copy(&buf[0], &buf[0]+ (2+o.size()), msg_packet.body());
+            message_.assign(msg_packet.data(), msg_packet.header_len + (2+o.size()));
+            socket_.async_send_to(
+                    buffer(message_), endpoint_,
+                    boost::bind(&udp_multicast_sender::handle_send_order, this,
+                                placeholders::error, 1));
+        }
     }
 
     void udp_multicast_sender::handle_send_order(const boost::system::error_code& error, int count)
