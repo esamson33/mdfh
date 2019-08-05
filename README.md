@@ -31,7 +31,7 @@ To run the server (market data simulator)
   $ ./server 239.255.0.1
   ```
   
-Extra: a python script is also included on the python/ directory. It is a UDP listener which just prints out all UDP traffic on the multicast group _239.255.0.1_ port 54321.
+Extra: a python script is also included on the python/ directory. It is a UDP listener which just prints out all UDP traffic on the multicast group _239.255.0.1_ port 54321. This requres the *Twisted* library.
   ```
   $ python3 mdfh_client.py
   ```
