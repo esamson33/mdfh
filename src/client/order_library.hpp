@@ -22,7 +22,7 @@ namespace client {
         order_library()
         {
             library_ = {{"IBM", mdfh::server::order_book("IBM")},
-                        {"AAPL", mdfh::server::order_book("IBM")}};
+                        {"AAPL", mdfh::server::order_book("AAPL")}};
         }
 
         void add_order(mdfh::common::market_data::order::order_ptr order)
