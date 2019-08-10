@@ -172,8 +172,8 @@ namespace mdfh {
     void udp_multicast_sender::start_order_sending()
     {
         std::string csv_from_input_file[] = {
-                "00000000,A,123456789,B,001000,   IBM,0002000000,Y",
-                "00000000,A,123456790,S,001001,   IBM,0006000000,Y",
+                "00000000,A,123456789,B,002000,   IBM,0002000000,Y",
+                "00000000,A,123456790,S,006000,   IBM,0002010000,Y",
         };
 
         for (const auto& csv: csv_from_input_file)
