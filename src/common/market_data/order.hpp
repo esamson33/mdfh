@@ -18,7 +18,7 @@ namespace market_data {
     {
         typedef std::shared_ptr<order> order_ptr;
 
-        static constexpr int total_data_len = 42;
+        static constexpr int max_data_len = 42;
 
         std::string ts;         // len is 8
         char m_type;            // "A", "a" long form
@@ -38,13 +38,13 @@ namespace market_data {
                 << ind
                 << shares
                 << std::left << std::setw(6) << stock
-                <<  price
+                << price
                 << display;
             return os.str();
         }
     };
 
-    static bool operator<(const order& r, const order& l)
+    inline bool operator<(const order& r, const order& l)
     {
         if (l.price == r.price)
         {
@@ -56,7 +56,7 @@ namespace market_data {
         }
     }
 
-    static bool operator>(const order& r, const order& l)
+    inline bool operator>(const order& r, const order& l)
     {
         if (l.price == r.price)
         {
@@ -68,7 +68,7 @@ namespace market_data {
         }
     }
 
-    static order::order_ptr from_csv(const std::string& csv)
+    inline order::order_ptr from_csv(const std::string& csv)
     {
         //order o;
         auto o = std::make_shared<order>();
@@ -87,7 +87,7 @@ namespace market_data {
         return o;
     }
 
-    static order::order_ptr from_string(const std::string& str)
+    inline order::order_ptr from_string(const std::string& str)
     {
         //order o;
         auto o = std::make_shared<order>();
