@@ -18,7 +18,7 @@ namespace market_data {
     {
         typedef std::shared_ptr<order> order_ptr;
 
-        static constexpr int max_data_len = 42;
+        static constexpr int total_data_len = 42;
 
         std::string ts;         // len is 8
         char m_type;            // "A", "a" long form
