@@ -2,6 +2,10 @@
 #include <iostream>
 #include "system_message.hpp"
 
+#ifdef __linux__
+#include <arpa/inet.h>
+#endif
+
 namespace mdfh
 {
     system_message::buffer_type system_message::message()
